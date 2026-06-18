@@ -1,0 +1,31 @@
+name: Streamlit Keep-Alive
+
+on:
+  schedule:
+    # Runs every 3 hours
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update keepalive.txt
+        run: |
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > keepalive.txt
+          echo "Streamlit Keep-Alive" >> keepalive.txt
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: daily keepalive commit to prevent Streamlit hibernation [skip ci]"
+          file_pattern: "keepalive.txt"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
